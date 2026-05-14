@@ -1,8 +1,8 @@
 from flask import Flask, render_template, request, flash
 from app.utils import Prediction
+import os
 
 app = Flask(__name__)
-import os
 app.secret_key = os.getenv("SECRET_KEY", "dev_secret")
 
 @app.route('/')
@@ -22,15 +22,17 @@ def predict_price():
         data = [year, km_driven, fuel, seller_type, transmission, owner]
 
         pred_obj = Prediction()
-        price = max(0, pred_obj.predict(data))  # ✅ prevent negative price
+        price = max(0, pred_obj.predict(data))
 
-        return render_template('index.html', prediction_text=f"Predicted Price: ₹{round(price, 2)}")
+        return render_template(
+            'index.html',
+            prediction_text=f"Predicted Price: ₹{round(price, 2)}"
+        )
 
     except Exception as e:
         flash(f"Error: {e}")
         return render_template("index.html")
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     print("🚀 Flask app starting...")
-    if __name__ == "__main__":
     app.run()
