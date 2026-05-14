@@ -2,7 +2,8 @@ from flask import Flask, render_template, request, flash
 from app.utils import Prediction
 
 app = Flask(__name__)
-app.secret_key = 'your_secret_key'
+import os
+app.secret_key = os.getenv("SECRET_KEY", "dev_secret")
 
 @app.route('/')
 def home():
@@ -31,4 +32,5 @@ def predict_price():
 
 if __name__ == '__main__':
     print("🚀 Flask app starting...")
-    app.run(debug=True)
+    if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5000)
