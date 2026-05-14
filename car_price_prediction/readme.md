@@ -1,25 +1,34 @@
-# Car Price Prediction (Major Project - Ediglobe)
+# 🚗 Car Price Prediction Web App
 
-## Project Overview
-This project uses a machine learning model built with scikit-learn to predict the price of a used car based on key features like year, kilometers driven, fuel type, seller type, transmission, and ownership.
+A Machine Learning based Flask web application that predicts used car prices.
 
-## Tech Stack
+---
+
+## 📌 Features
+
+- Predict used car prices
+- Flask backend
+- ML model integration
+- Responsive UI
+- Real-time predictions
+
+---
+
+## 🛠️ Tech Stack
+
 - Python
-- Flask (backend)
-- Bootstrap (frontend)
-- scikit-learn (model)
-- pandas, numpy
+- Flask
+- Scikit-Learn
+- Pandas
+- NumPy
+- HTML/CSS/Bootstrap
 
-## How to Run
-1. Install dependencies:
+---
+
+## 🚀 Installation
+
+```bash
+git clone https://github.com/roshankodi/car-price-prediction.git
+cd car-price-prediction
 pip install -r requirements.txt
-
-2. Start the Flask app:
-
-3. Open `http://127.0.0.1:5000` in your browser
-
-## Features
-- User-friendly web interface
-- Clean form input
-- Machine learning-based prediction
-- CSV log of each prediction
+python main.py
