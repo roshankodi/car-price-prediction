@@ -12,10 +12,6 @@ A Machine Learning-powered Flask web application that predicts the selling price
 
 ## 📸 Project Preview
 
-<img width="1200" alt="Car Price Prediction App" src="https://via.placeholder.com/1200x600.png?text=Car+Price+Prediction+Web+App">
-
-> Replace this placeholder image with your actual project screenshot later.
-
 ---
 
 ## ✨ Features
@@ -144,8 +140,7 @@ This project is deployed using:
 
 ### Live Website
 
-🔗 [https://car-price-prediction-beta.vercel.app](https://car-price-prediction-beta.vercel.app)
-
+🔗 [https://car-price-prediction-vert.vercel.app/](https://car-price-prediction-vert.vercel.app/)
 ---
 
 ## 🔮 Future Improvements
