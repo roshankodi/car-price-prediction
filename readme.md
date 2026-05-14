@@ -6,7 +6,7 @@ A Machine Learning-powered Flask web application that predicts the selling price
 
 ## 🌐 Live Demo
 
-🔗 Vercel Deployment: [https://car-price-prediction-beta.vercel.app](https://car-price-prediction-beta.vercel.app)
+🔗 Vercel Deployment: [https://car-price-prediction-beta.vercel.app](https://car-price-prediction-vert.vercel.app/)
 
 ---
 
