@@ -4,3 +4,8 @@ pandas
 scikit-learn
 joblib
 gunicorn
+python-dotenv
+notebook
+ipykernel
+jupyter
+matplotlib

@@ -1,54 +1,116 @@
 import json
-import numpy as np
 import pickle
+import logging
+import numpy as np
 import os
+
 from CONFIG import MODEL_PATH, COLUMNS_PATH, ENCODE_PATH
 
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s"
+)
+
+logger = logging.getLogger(__name__)
+
+
 class Prediction:
+
+    model = None
+    columns = None
+    encodings = None
+
     def __init__(self):
+
+        if Prediction.model is None:
+            self.load_files()
+
+    def load_files(self):
+
         try:
+
             if not os.path.exists(MODEL_PATH):
-                raise FileNotFoundError(f"Model file not found at: {MODEL_PATH}")
+                raise FileNotFoundError(
+                    f"Model file not found: {MODEL_PATH}"
+                )
 
             with open(MODEL_PATH, 'rb') as f:
-                self.model = pickle.load(f)
+                Prediction.model = pickle.load(f)
 
             with open(COLUMNS_PATH, 'r') as f:
-                self.columns = json.load(f)
+                Prediction.columns = json.load(f)
 
             with open(ENCODE_PATH, 'r') as f:
-                self.encodings = json.load(f)
+                Prediction.encodings = json.load(f)
+
+            logger.info(
+                "Model and configuration loaded successfully"
+            )
 
         except Exception as e:
-            print("❌ Error loading model or config files:", e)
-            self.model = None
+
+            logger.error(
+                f"Loading error: {str(e)}"
+            )
+
+            raise
 
     def encode_input(self, data):
+
         encoded = []
-        for idx, col in enumerate(self.columns):
-            if idx >= len(data):
-                raise ValueError(f"Missing value for column: {col}")
-            val = data[idx]
 
-            # Skip encoding if already numeric (assumes form values are encoded)
-            if col in self.encodings and not isinstance(val, int):
-                val = self.encodings[col].get(str(val), -1)
+        for idx, col in enumerate(
+            Prediction.columns
+        ):
 
-            encoded.append(val)
+            value = data[idx]
 
-        print("✅ Encoded Input:", encoded)
-        return np.array(encoded).reshape(1, -1)
+            if (
+                col in Prediction.encodings
+                and not isinstance(
+                    value,
+                    (
+                        int,
+                        float,
+                        np.integer,
+                        np.floating
+                    )
+                )
+            ):
+
+                value = Prediction.encodings[
+                    col
+                ].get(
+                    str(value),
+                    -1
+                )
+
+            encoded.append(
+                float(value)
+            )
+
+        return np.array(
+            encoded,
+            dtype=float
+        ).reshape(
+            1,
+            -1
+        )
 
     def predict(self, data):
-        print("📥 Raw Input Data:", data)
 
-        if self.model is None:
-            raise RuntimeError("Model is not loaded. Check model path or loading errors.")
+        input_encoded = self.encode_input(
+            data
+        )
 
-        input_encoded = self.encode_input(data)
-        print("🧠 Model Input Shape:", input_encoded.shape)
+        prediction = Prediction.model.predict(
+            input_encoded
+        )[0]
 
-        prediction = self.model.predict(input_encoded)[0]
-        print("💰 Predicted Price:", prediction)
+        logger.info(
+            f"Prediction successful: {prediction}"
+        )
 
-        return prediction
+        return float(
+            prediction
+        )

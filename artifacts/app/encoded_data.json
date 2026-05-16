@@ -1,0 +1,1 @@
+{"fuel": {"Petrol": 0, "Diesel": 1, "CNG": 2, "LPG": 3, "Electric": 4}, "seller_type": {"Dealer": 0, "Individual": 1, "Trustmark Dealer": 2}, "transmission": {"Manual": 0, "Automatic": 1}, "owner": {"First Owner": 0, "Second Owner": 1, "Third Owner": 2, "Fourth & Above Owner": 3, "Test Drive Car": 4}}

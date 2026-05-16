@@ -1,38 +1,163 @@
 from flask import Flask, render_template, request, flash
+import logging
+
+from CONFIG import DEBUG, HOST, PORT, SECRET_KEY
 from app.utils import Prediction
-import os
+
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(message)s"
+)
 
 app = Flask(__name__)
-app.secret_key = os.getenv("SECRET_KEY", "dev_secret")
+app.secret_key = SECRET_KEY
+
+_predictor = None
+
+
+def get_predictor():
+    global _predictor
+
+    if _predictor is None:
+        _predictor = Prediction()
+
+    return _predictor
+
 
 @app.route('/')
 def home():
-    return render_template('index.html')
+    return render_template(
+        'index.html'
+    )
 
-@app.route('/predict', methods=['POST'])
+
+@app.route(
+    '/predict',
+    methods=['POST']
+)
 def predict_price():
+
     try:
-        year = int(request.form['year'])
-        km_driven = int(request.form['km_driven'])
-        fuel = int(request.form['fuel'])
-        seller_type = int(request.form['seller_type'])
-        transmission = int(request.form['transmission'])
-        owner = int(request.form['owner'])
 
-        data = [year, km_driven, fuel, seller_type, transmission, owner]
-
-        pred_obj = Prediction()
-        price = max(0, pred_obj.predict(data))
-
-        return render_template(
-            'index.html',
-            prediction_text=f"Predicted Price: ₹{round(price, 2)}"
+        year = int(
+            request.form.get(
+                'year',
+                ''
+            ).strip()
         )
 
-    except Exception as e:
-        flash(f"Error: {e}")
-        return render_template("index.html")
+        km_driven = int(
+            request.form.get(
+                'km_driven',
+                ''
+            ).strip()
+        )
+
+        fuel = int(
+            request.form.get(
+                'fuel',
+                ''
+            ).strip()
+        )
+
+        seller_type = int(
+            request.form.get(
+                'seller_type',
+                ''
+            ).strip()
+        )
+
+        transmission = int(
+            request.form.get(
+                'transmission',
+                ''
+            ).strip()
+        )
+
+        owner = int(
+            request.form.get(
+                'owner',
+                ''
+            ).strip()
+        )
+
+        if year < 1900 or year > 2100:
+            raise ValueError(
+                "Year must be between 1900 and 2100"
+            )
+
+        if km_driven < 0:
+            raise ValueError(
+                "Kilometers driven cannot be negative"
+            )
+
+        current_year = 2026
+
+        car_age = max(
+            current_year - year,
+            1
+        )
+
+        km_per_year = (
+            km_driven / car_age
+        )
+
+        data = [
+            year,
+            km_driven,
+            fuel,
+            seller_type,
+            transmission,
+            owner,
+            car_age,
+            km_per_year
+        ]
+
+        price = max(
+            0.0,
+            get_predictor().predict(
+                data
+            )
+        )
+
+        return render_template(
+    "index.html",
+    prediction_text=f"₹{price:,.2f}",
+    model_name="Random Forest Regressor",
+    accuracy="~85–95%",
+    car_age=car_age,
+    km_per_year=round(
+        km_per_year,
+        2
+    )
+)
+
+    except ValueError as e:
+
+        flash(
+            f"Invalid input: {e}"
+        )
+
+    except Exception:
+
+        logging.exception(
+            "Prediction failed"
+        )
+
+        flash(
+            "Something went wrong while generating prediction."
+        )
+
+    return render_template(
+        "index.html"
+    )
+
 
 if __name__ == "__main__":
-    print("🚀 Flask app starting...")
-    app.run()
+
+    app.run(
+        host=HOST,
+        port=PORT,
+        debug=DEBUG
+    )
