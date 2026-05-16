@@ -1,4 +1,10 @@
-from flask import Flask, render_template, request, flash
+from flask import (
+    Flask,
+    render_template,
+    request,
+    flash,
+    jsonify
+)
 import logging
 
 from CONFIG import DEBUG, HOST, PORT, SECRET_KEY
@@ -161,3 +167,127 @@ if __name__ == "__main__":
         port=PORT,
         debug=DEBUG
     )
+
+@app.route(
+    '/api/predict',
+    methods=['POST']
+)
+def api_predict():
+
+    try:
+
+        data = request.get_json()
+
+        if not data:
+
+            return jsonify({
+
+                "error":
+                "No JSON data provided"
+
+            }),400
+
+
+        year = int(
+            data.get(
+                "year"
+            )
+        )
+
+        km_driven = int(
+            data.get(
+                "km_driven"
+            )
+        )
+
+        fuel = int(
+            data.get(
+                "fuel"
+            )
+        )
+
+        seller_type = int(
+            data.get(
+                "seller_type"
+            )
+        )
+
+        transmission = int(
+            data.get(
+                "transmission"
+            )
+        )
+
+        owner = int(
+            data.get(
+                "owner"
+            )
+        )
+
+        current_year = 2026
+
+        car_age = max(
+            current_year-year,
+            1
+        )
+
+        km_per_year = (
+            km_driven/car_age
+        )
+
+        features=[
+
+            year,
+            km_driven,
+            fuel,
+            seller_type,
+            transmission,
+            owner,
+            car_age,
+            km_per_year
+
+        ]
+
+        price=max(
+            0,
+            get_predictor().predict(
+                features
+            )
+        )
+
+        return jsonify({
+
+            "predicted_price":
+            round(
+                float(price),
+                2
+            ),
+
+            "car_age":
+            car_age,
+
+            "km_per_year":
+            round(
+                km_per_year,
+                2
+            )
+
+        })
+
+    except Exception as e:
+
+        return jsonify({
+
+            "error":
+            str(e)
+
+        }),400
+
+    except Exception as e:
+
+        return jsonify({
+
+            "error":
+            str(e)
+
+        }),400
