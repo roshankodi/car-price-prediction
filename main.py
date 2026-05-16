@@ -5,9 +5,16 @@ from flask import (
     flash,
     jsonify
 )
+
 import logging
 
-from CONFIG import DEBUG, HOST, PORT, SECRET_KEY
+from CONFIG import (
+    DEBUG,
+    HOST,
+    PORT,
+    SECRET_KEY
+)
+
 from app.utils import Prediction
 
 
@@ -23,6 +30,7 @@ _predictor = None
 
 
 def get_predictor():
+
     global _predictor
 
     if _predictor is None:
@@ -33,6 +41,7 @@ def get_predictor():
 
 @app.route('/')
 def home():
+
     return render_template(
         'index.html'
     )
@@ -109,7 +118,8 @@ def predict_price():
             km_driven / car_age
         )
 
-        data = [
+        features = [
+
             year,
             km_driven,
             fuel,
@@ -118,26 +128,39 @@ def predict_price():
             owner,
             car_age,
             km_per_year
+
         ]
 
         price = max(
             0.0,
             get_predictor().predict(
-                data
+                features
             )
         )
 
         return render_template(
-    "index.html",
-    prediction_text=f"₹{price:,.2f}",
-    model_name="Random Forest Regressor",
-    accuracy="~85–95%",
-    car_age=car_age,
-    km_per_year=round(
-        km_per_year,
-        2
-    )
-)
+
+            "index.html",
+
+            prediction_text=
+            f"₹{price:,.2f}",
+
+            model_name=
+            "Random Forest Regressor",
+
+            accuracy=
+            "~85–95%",
+
+            car_age=
+            car_age,
+
+            km_per_year=
+            round(
+                km_per_year,
+                2
+            )
+
+        )
 
     except ValueError as e:
 
@@ -160,14 +183,6 @@ def predict_price():
     )
 
 
-if __name__ == "__main__":
-
-    app.run(
-        host=HOST,
-        port=PORT,
-        debug=DEBUG
-    )
-
 @app.route(
     '/api/predict',
     methods=['POST']
@@ -187,42 +202,12 @@ def api_predict():
 
             }),400
 
-
-        year = int(
-            data.get(
-                "year"
-            )
-        )
-
-        km_driven = int(
-            data.get(
-                "km_driven"
-            )
-        )
-
-        fuel = int(
-            data.get(
-                "fuel"
-            )
-        )
-
-        seller_type = int(
-            data.get(
-                "seller_type"
-            )
-        )
-
-        transmission = int(
-            data.get(
-                "transmission"
-            )
-        )
-
-        owner = int(
-            data.get(
-                "owner"
-            )
-        )
+        year = int(data.get("year"))
+        km_driven = int(data.get("km_driven"))
+        fuel = int(data.get("fuel"))
+        seller_type = int(data.get("seller_type"))
+        transmission = int(data.get("transmission"))
+        owner = int(data.get("owner"))
 
         current_year = 2026
 
@@ -235,7 +220,7 @@ def api_predict():
             km_driven/car_age
         )
 
-        features=[
+        features = [
 
             year,
             km_driven,
@@ -248,7 +233,7 @@ def api_predict():
 
         ]
 
-        price=max(
+        price = max(
             0,
             get_predictor().predict(
                 features
@@ -283,11 +268,13 @@ def api_predict():
 
         }),400
 
-    except Exception as e:
 
-        return jsonify({
+if __name__ == "__main__":
 
-            "error":
-            str(e)
+    app.run(
 
-        }),400
+        host=HOST,
+        port=PORT,
+        debug=DEBUG
+
+    )
